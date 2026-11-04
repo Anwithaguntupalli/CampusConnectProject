@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusConnect • Event Platform</title>
+  
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              coral: '#FA4D38',
+              hover: '#E43E29',
+              light: '#FFF0EE',
+              navy: '#0C1322',
+              slate: '#1E293B'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-[#F8F9FA] text-slate-800 min-h-screen flex flex-col pb-28">
+
+  <!-- ======================== GLOBAL HEADER ======================== -->
+  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-100 shadow-sm transition">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between py-3">
+      
+      <!-- Brand Logo -->
+      <div class="flex items-center gap-8">
+        <div onclick="switchScreen(1)" class="flex items-center gap-2.5 cursor-pointer group">
+          <div class="w-8 h-8 rounded-full bg-rose-500 flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition">
+            <i data-lucide="compass" class="w-4 h-4"></i>
+          </div>
+          <span class="text-lg font-extrabold tracking-tight text-slate-900 group-hover:text-rose-600 transition">
+            Campus<span class="text-rose-500">Connect</span>
+          </span>
+        </div>
+
+        <!-- Navigation Tabs (Screen 1, 2, 7) -->
+        <nav class="hidden md:flex items-center gap-6">
+          <button id="nav-tab-events" onclick="switchScreen(1)" class="nav-tab text-sm font-semibold text-rose-500 border-b-2 border-rose-500 pb-1">
+            Events
+          </button>
+          <button id="nav-tab-calendar" onclick="switchScreen(2)" class="nav-tab text-sm font-medium text-slate-600 hover:text-slate-900 pb-1">
+            Calendar
+          </button>
+          <button id="nav-tab-myreg" onclick="switchScreen(7)" class="nav-tab text-sm font-medium text-slate-600 hover:text-slate-900 pb-1">
+            My Registrations
+          </button>
+          <button onclick="switchScreen(10)" class="text-sm font-medium text-slate-600 hover:text-slate-900 pb-1">
+            Interests
+          </button>
+          <button onclick="switchScreen(12)" class="text-sm font-medium text-slate-600 hover:text-slate-900 pb-1">
+            Squad
+          </button>
+        </nav>
+      </div>
+
+      <!-- Right Action Items -->
+      <div class="flex items-center gap-3">
+        <!-- Quick Search Bar -->
+        <div class="relative hidden sm:block">
+          <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+          <input 
+            type="text" 
+            placeholder="Search events..." 
+            oninput="handleSearchInput(this.value)"
+            class="pl-9 pr-4 py-1.5 text-xs rounded-full bg-slate-100 border border-transparent focus:border-rose-400 focus:bg-white focus:outline-none w-44 lg:w-56 transition"
+          />
+        </div>
+
+        <!-- Notifications Inbox Button (Screen 4) -->
+        <button onclick="switchScreen(4)" class="relative p-2 rounded-full hover:bg-slate-100 text-slate-600 transition" title="Inbox & Updates">
+          <i data-lucide="bell" class="w-4 h-4"></i>
+          <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-white"></span>
+        </button>
+
+        <!-- Organizer Dashboard Switcher (Screen 9) -->
+        <button id="nav-organizer-btn" onclick="switchScreen(9)" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200 transition" title="Switch to Organizer View">
+          <i data-lucide="shield" class="w-3.5 h-3.5 text-rose-500"></i>
+          <span class="hidden sm:inline">Organizer (Tech Club)</span>
+        </button>
+
+        <!-- User Profile Avatar (Screen 11) -->
+        <button onclick="switchScreen(11)" class="w-8 h-8 rounded-full bg-rose-100 text-rose-600 border border-rose-200 flex items-center justify-center font-bold text-xs hover:ring-2 hover:ring-rose-400 transition" title="Anwitha Guntupalli Profile">
+          A
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ======================== MAIN CONTAINER ======================== -->
+  <main id="app-main-content" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
+
+    <!-- ==================== SCREEN 1: EXPLORE & BROWSE EVENTS ==================== -->
+    <section id="screen-1" class="space-y-10">
+      
+      <!-- Hero Header -->
+      <div class="max-w-3xl">
+        <h1 class="text-4xl sm:text-5xl font-black text-slate-900 tracking-tight mb-3">
+          Find your next <span class="text-rose-500">campus moment.</span>
+        </h1>
+        <p class="text-sm sm:text-base text-slate-500 leading-relaxed">
+          Talks, workshops, festivals and hackathons across campus. Join thousands of students building and celebrating together.
+        </p>
+      </div>
+
+      <!-- Search and Filter Bar -->
+      <div class="space-y-4">
+        <div class="flex items-center gap-3">
+          <div class="relative flex-1">
+            <i data-lucide="search" class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            <input 
+              type="text" 
+              placeholder="Search by topic, club, or keyword..." 
+              oninput="handleSearchInput(this.value)"
+              class="w-full pl-12 pr-4 py-3 text-sm rounded-2xl bg-white border border-slate-200 focus:border-rose-500 focus:ring-2 focus:ring-rose-100 focus:outline-none shadow-sm transition"
+            />
+          </div>
+          <button onclick="handleSearchInput(document.querySelector('#screen-1 input').value)" 
+            class="px-6 py-3 text-sm font-semibold rounded-2xl bg-slate-900 text-white hover:bg-rose-500 shadow-sm transition flex items-center gap-2">
+            <span>Search</span>
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Filter Chips -->
+        <div id="s1-filter-chips" class="flex items-center gap-2 overflow-x-auto pb-1">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Featured This Week Section -->
+      <div>
+        <div class="flex items-center justify-between mb-5">
+          <h2 class="text-lg font-bold text-slate-900">Featured this week</h2>
+          <button onclick="handleCategoryFilter('All')" class="text-xs font-semibold text-rose-500 hover:text-rose-600 flex items-center gap-1">
+            <span>View all events</span>
+            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+
+        <div id="s1-featured-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- All Upcoming Events Grid -->
+      <div>
+        <div class="flex items-center justify-between mb-5">
+          <h2 class="text-lg font-bold text-slate-900">All campus events</h2>
+          <span class="text-xs text-slate-400">Showing active registrations</span>
+        </div>
+
+        <div id="s1-all-events-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- ==================== SCREEN 2: MONTHLY CALENDAR & COMING UP ==================== -->
+    <section id="screen-2" class="hidden space-y-8">
+      
+      <div>
+        <h1 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mb-2">
+          Your campus, <span class="text-rose-500">at a glance.</span>
+        </h1>
+        <p class="text-sm text-slate-500">Plan ahead and never miss a spotlight moment on your schedule.</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Calendar Grid (Left Column) -->
+        <div class="lg:col-span-7 bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="text-lg font-bold text-slate-900">November 2026</h3>
+              <p class="text-xs text-slate-400">Semester Schedule & Event Highlights</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button class="p-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600">
+                <i data-lucide="chevron-left" class="w-4 h-4"></i>
+              </button>
+              <button onclick="selectCalendarDay(29)" class="px-3 py-1.5 text-xs font-bold rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200">
+                Today
+              </button>
+              <button class="p-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600">
+                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Weekday Labels -->
+          <div class="grid grid-cols-7 gap-2 text-center text-[11px] font-bold text-slate-400 uppercase">
+            <span>Sun</span>
+            <span>Mon</span>
+            <span>Tue</span>
+            <span>Wed</span>
+            <span>Thu</span>
+            <span>Fri</span>
+            <span>Sat</span>
+          </div>
+
+          <!-- Days Grid -->
+          <div id="s2-calendar-grid" class="grid grid-cols-7 gap-2">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- Coming Up List (Right Column) -->
+        <div class="lg:col-span-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-base font-bold text-slate-900">Coming up</h3>
+            <span class="text-xs text-slate-400">Chronological</span>
+          </div>
+          
+          <div id="s2-coming-up-list" class="space-y-3">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ==================== SCREEN 3: EVENT REGISTRATION FORM ==================== -->
+    <section id="screen-3" class="hidden space-y-8 max-w-5xl mx-auto">
+      
+      <div>
+        <h1 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mb-2">
+          You're one step <span class="text-rose-500">away from being there.</span>
+        </h1>
+        <p class="text-sm text-slate-500">Register to secure your spot for the event in seconds.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left: Event Summary Preview Card -->
+        <div id="s3-event-preview" class="md:col-span-5 bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+          <!-- Populated by JS -->
+        </div>
+
+        <!-- Right: Registration Form (Calls POST /api/registrations) -->
+        <div class="md:col-span-7 bg-white p-8 rounded-3xl border border-slate-100 shadow-sm">
+          <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
+            <div>
+              <h3 class="text-lg font-bold text-slate-900">Event registration</h3>
+              <p class="text-xs text-slate-400">Pre-filled with your verified student profile</p>
+            </div>
+            <span class="px-2.5 py-1 text-[11px] font-bold rounded-full bg-rose-50 text-rose-600">
+              POST /api/registrations
+            </span>
+          </div>
+
+          <form onsubmit="handleRegistrationSubmit(event)" class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Full name</label>
+              <input id="reg-form-name" type="text" required
+                class="w-full px-4 py-3 text-xs rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-rose-500 focus:outline-none transition font-medium" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Email address</label>
+              <input id="reg-form-email" type="email" required
+                class="w-full px-4 py-3 text-xs rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-rose-500 focus:outline-none transition font-medium" />
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Phone number</label>
+                <input id="reg-form-phone" type="tel" required
+                  class="w-full px-4 py-3 text-xs rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-rose-500 focus:outline-none transition font-medium" />
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Registration Type</label>
+                <select id="reg-form-type"
+                  class="w-full px-4 py-3 text-xs rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-rose-500 focus:outline-none transition font-medium">
+                  <option value="Student Attendee">Student Attendee</option>
+                  <option value="General Access">General Access</option>
+                  <option value="Presenter / Participant">Presenter / Participant</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Department / Institution</label>
+              <input id="reg-form-dept" type="text" required
+                class="w-full px-4 py-3 text-xs rounded-xl bg-slate-50 border border-slate-200 focus:bg-white focus:border-rose-500 focus:outline-none transition font-medium" />
+            </div>
+
+            <div class="pt-2">
+              <label class="flex items-start gap-2 cursor-pointer text-xs text-slate-500">
+                <input type="checkbox" required checked class="mt-0.5 rounded text-rose-500 focus:ring-rose-400" />
+                <span>I agree to follow the campus event code of conduct and present valid identification upon entry.</span>
+              </label>
+            </div>
+
+            <div class="pt-4">
+              <button id="reg-submit-btn" type="submit"
+                class="w-full py-3.5 px-6 rounded-2xl bg-rose-500 hover:bg-rose-600 text-white font-bold text-sm shadow-md hover:shadow-lg transition flex items-center justify-center gap-2">
+                <span>Confirm my registration</span>
+                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ==================== SCREEN 4: NOTIFICATIONS & EMAIL INBOX ==================== -->
+    <section id="screen-4" class="hidden space-y-8">
+      
+      <div>
+        <h1 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mb-2">
+          Never miss a <span class="text-rose-500">campus moment.</span>
+        </h1>
+        <p class="text-sm text-slate-500">All your registrations, passes, tickets and updates in one place.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+        
+        <!-- Left Sidebar Categories -->
+        <div class="md:col-span-3 bg-white p-4 rounded-3xl border border-slate-100 shadow-sm space-y-1">
+          <button class="w-full px-4 py-2.5 rounded-2xl bg-rose-50 text-rose-600 font-bold text-xs flex items-center justify-between">
+            <span class="flex items-center gap-2">
+              <i data-lucide="inbox" class="w-4 h-4"></i>
+              <span>Inbox</span>
+            </span>
+            <span class="px-2 py-0.5 text-[10px] rounded-full bg-rose-500 text-white">3</span>
+          </button>
+          <button class="w-full px-4 py-2.5 rounded-2xl hover:bg-slate-50 text-slate-600 font-medium text-xs flex items-center gap-2">
+            <i data-lucide="bell" class="w-4 h-4 text-slate-400"></i>
+            <span>All notifications</span>
+          </button>
+          <button onclick="switchScreen(7)" class="w-full px-4 py-2.5 rounded-2xl hover:bg-slate-50 text-slate-600 font-medium text-xs flex items-center gap-2">
+            <i data-lucide="ticket" class="w-4 h-4 text-slate-400"></i>
+            <span>Ticket History</span>
+          </button>
+          <button onclick="switchScreen(11)" class="w-full px-4 py-2.5 rounded-2xl hover:bg-slate-50 text-slate-600 font-medium text-xs flex items-center gap-2">
+            <i data-lucide="bookmark" class="w-4 h-4 text-slate-400"></i>
+            <span>Bookmarks</span>
+          </button>
+          <button class="w-full px-4 py-2.5 rounded-2xl hover:bg-slate-50 text-slate-600 font-medium text-xs flex items-center gap-2">
+            <i data-lucide="clock" class="w-4 h-4 text-slate-400"></i>
+            <span>Reminders</span>
+          </button>
+        </div>
+
+        <!-- Middle Column: Notification Feed List -->
+        <div class="md:col-span-4 space-y-3">
+          <div class="flex items-center justify-between px-1">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500">Recent messages</h4>
+            <span class="text-[11px] text-rose-500 font-semibold cursor-pointer">Mark all read</span>
+          </div>
+          <div id="s4-notif-list" class="space-y-2">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- Right Column: Formatted Preview Card -->
+        <div class="md:col-span-5">
+          <div class="flex items-center justify-between px-1 mb-3">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500">Message preview</h4>
+            <span class="text-[11px] text-slate-400">Live View</span>
+          </div>
+          <div id="s4-message-preview">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ==================== SCREEN 5: STUDENT HUB / DASHBOARD ==================== -->
+    <section id="screen-5" class="hidden space-y-8">
+      
+      <div>
+        <h1 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mb-2">
+          Good morning, <span class="text-rose-500">Anwitha 👋</span>
+        </h1>
+        <p class="text-sm text-slate-500">A quick glimpse into what you have booked, saved and recommendations today.</p>
+      </div>
+
+      <!-- Feature Announcement Banner -->
+      <div class="bg-hero-dark rounded-3xl p-8 text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-md">
+        <div>
+          <span class="px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wider uppercase bg-rose-500/30 text-rose-300 border border-rose-500/40">
+            TRENDING ON CAMPUS
+          </span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold mt-2 mb-1">Make room for something new.</h2>
+          <p class="text-xs sm:text-sm text-slate-300">Discover handpicked events, community hackathons, and guest keynotes.</p>
+        </div>
+        <button onclick="switchScreen(1)" class="px-6 py-3 rounded-2xl bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs shadow-md whitespace-nowrap transition flex items-center gap-2">
+          <span>Explore events</span>
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- 4 KPI Stat Counters -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm">
+          <span class="text-3xl font-black text-slate-900">03</span>
+          <p class="text-xs font-medium text-slate-500 mt-1">Upcoming events</p>
+        </div>
+        <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm">
+          <span class="text-3xl font-black text-slate-900">05</span>
+          <p class="text-xs font-medium text-slate-500 mt-1">Saved items</p>
+        </div>
+        <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm">
+          <span class="text-3xl font-black text-slate-900">04</span>
+          <p class="text-xs font-medium text-slate-500 mt-1">Past attendances</p>
+        </div>
+        <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm">
+          <span class="text-3xl font-black text-slate-900">02</span>
+          <p class="text-xs font-medium text-slate-500 mt-1">Team invitations</p>
+        </div>
+      </div>
+
+      <!-- Picked For You Section -->
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-base font-bold text-slate-900">Picked for you</h3>
+          <button onclick="switchScreen(10)" class="text-xs font-semibold text-rose-500">Edit preferences</button>
+        </div>
+        <div id="s5-picked-grid" class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- ==================== SCREEN 6: EVENT DETAIL PAGE ==================== -->
+    <section id="screen-6" class="hidden space-y-8">
+      
+      <div>
+        <div class="flex items-center gap-2 text-xs text-slate-400 mb-2">
+          <button onclick="switchScreen(1)" class="hover:text-slate-600">Events</button>
+          <span>/</span>
+          <span id="s6-badge" class="text-rose-500 font-semibold uppercase">TECH TALK</span>
+        </div>
+        <h1 id="s6-title" class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">AI & the Future</h1>
+        <p class="text-sm text-slate-500 mt-1">A practical inspiring session with leaders and engineers building intelligent systems.</p>
+      </div>
+
+      <!-- Large Hero Card -->
+      <div class="bg-hero-dark rounded-3xl p-8 sm:p-10 text-white shadow-lg flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div class="flex items-center gap-5">
+          <div class="w-16 h-16 rounded-3xl bg-blue-500/20 border border-blue-400/30 flex items-center justify-center font-bold text-2xl text-blue-300 flex-shrink-0">
+            AI
+          </div>
+          <div>
+            <span class="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-blue-500/30 text-blue-300 border border-blue-500/30">
+              KEYNOTE SESSION
+            </span>
+            <h2 class="text-2xl sm:text-3xl font-extrabold mt-2">Learn from people building the future.</h2>
+            <p id="s6-date-time" class="text-xs sm:text-sm text-slate-300 mt-1">12 NOV 2026 • 10:00 AM - 12:00 PM • MAIN AUDITORIUM HALL A</p>
+          </div>
+        </div>
+        <span class="px-4 py-2 text-xs font-bold rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+          FREE ENTRY
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left: About & Perks -->
+        <div class="md:col-span-8 bg-white p-8 rounded-3xl border border-slate-100 shadow-sm space-y-6">
+          <div>
+            <h3 class="text-lg font-bold text-slate-900 mb-2">About this event</h3>
+            <p id="s6-desc" class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              Discover how large language models, agentic workflows, and multimodal systems are reshaping product development. Join leading researchers and student builders as they demo autonomous systems and discuss career pathways in modern AI engineering.
+            </p>
+          </div>
+
+          <div class="pt-6 border-t border-slate-100">
+            <h3 class="text-sm font-bold text-slate-900 mb-4">What you'll get</h3>
+            <ul id="s6-perks-list" class="space-y-3">
+              <!-- Populated by JS -->
+            </ul>
+          </div>
+        </div>
+
+        <!-- Right: Event Information Panel -->
+        <div class="md:col-span-4 bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-6">
+          <div>
+            <h3 class="text-base font-bold text-slate-900 mb-4">Event information</h3>
+            <div class="space-y-3.5 text-xs text-slate-600">
+              <div>
+                <span class="block text-slate-400 font-semibold mb-0.5">Date</span>
+                <span id="s6-info-date" class="font-bold text-slate-900">Thu, 12 Nov 2026</span>
+              </div>
+              <div>
+                <span class="block text-slate-400 font-semibold mb-0.5">Time</span>
+                <span id="s6-info-time" class="font-bold text-slate-900">10:00 AM - 12:00 PM</span>
+              </div>
+              <div>
+                <span class="block text-slate-400 font-semibold mb-0.5">Location</span>
+                <span id="s6-info-loc" class="font-bold text-slate-900">Main Auditorium Hall A</span>
+              </div>
+              <div>
+                <span class="block text-slate-400 font-semibold mb-0.5">Organizer</span>
+                <span id="s6-info-org" class="font-bold text-slate-900">AI Club</span>
+              </div>
+              <div>
+                <span class="block text-slate-400 font-semibold mb-0.5">Capacity</span>
+                <span id="s6-info-cap" class="font-bold text-slate-900">142 / 200 registered</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-slate-100">
+            <button id="s6-reg-btn"
+              class="w-full py-3.5 px-4 rounded-2xl bg-rose-500 hover:bg-rose-600 text-white font-bold text-sm shadow-sm transition flex items-center justify-center gap-2">
+              <span>Register for free</span>
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ==================== SCREEN 7: MY REGISTRATIONS / ACTIVITY ==================== -->
+    <section id="screen-7" class="hidden space-y-8">
+      
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mb-2">
+            My <span class="text-rose-500">Activity</span>
+          </h1>
+          <p class="text-sm text-slate-500">Live records retrieved from GET /api/me/registrations</p>
+        </div>
+        <button onclick="switchScreen(8)" class="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 text-white text-xs font-semibold hover:bg-rose-500 transition">
+          <i data-lucide="ticket" class="w-4 h-4"></i>
+          <span>View Active Pass</span>
+        </button>
+      </div>
+
+      <!-- Filter Tabs -->
+      <div class="flex items-center gap-2 border-b border-slate-200 pb-3">
+        <button class="px-4 py-2 rounded-xl bg-slate-900 text-white text-xs font-semibold shadow-sm">
+          Upcoming (3)
+        </button>
+        <button class="px-4 py-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 text-xs font-medium transition">
+          Past (4)
+        </button>
+        <button class="px-4 py-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 text-xs font-medium transition">
+          Cancelled (0)
+        </button>
+      </div>
+
+      <!-- Registrations List Container -->
+      <div id="s7-registrations-list" class="space-y-3">
+        <!-- Populated by JS -->
+      </div>
+
+      <!-- Helper Notice -->
+      <div class="p-4 rounded-2xl bg-slate-50 border border-slate-100 text-xs text-slate-500 flex items-center justify-between">
+        <span>Need a change? You can cancel or transfer attendance up to 24 hours prior to event start.</span>
+        <button class="text-rose-500 font-semibold hover:underline">Help & Policy</button>
+      </div>
+
+    </section>
+
+
+    <!-- ==================== SCREEN 8: DIGITAL EVENT PASS / TICKET ==================== -->
+    <section id="screen-8" class="hidden space-y-8 max-w-lg mx-auto">
+      
+      <div class="text-center">
+        <h1 class="text-3xl font-black text-slate-900 tracking-tight mb-2">
+          Your digital <span class="text-rose-500">event pass</span>
+        </h1>
+        <p class="text-xs text-slate-500">Keep this pass handy for quick check-in upon arrival at the venue.</p>
+      </div>
+
+      <!-- Realistic Perforated Ticket Card -->
+      <div class="ticket-container bg-white">
+        
+        <!-- Top Half: Event Details -->
+        <div class="bg-hero-dark text-white p-7">
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-[10px] uppercase font-bold tracking-widest text-slate-400">EVENT ADMISSION PASS</span>
+            <span class="px-2.5 py-0.5 text-[10px] font-bold rounded-full bg-emerald-500 text-white uppercase tracking-wider">
+              CONFIRMED
+            </span>
+          </div>
+
+          <h2 id="s8-pass-title" class="text-2xl font-black tracking-tight mb-3">AI & the Future</h2>
+
+          <div class="space-y-1.5 text-xs text-slate-300">
+            <div class="flex items-center gap-2">
+              <i data-lucide="calendar" class="w-3.5 h-3.5 text-rose-400"></i>
+              <span id="s8-pass-date">Thu, 12 Nov 2026</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <i data-lucide="clock" class="w-3.5 h-3.5 text-rose-400"></i>
+              <span id="s8-pass-time">10:00 AM - 12:00 PM</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <i data-lucide="map-pin" class="w-3.5 h-3.5 text-rose-400"></i>
+              <span id="s8-pass-loc">Main Auditorium Hall A</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ticket Notches and Perforation Line -->
+        <div class="relative py-4 bg-white">
+          <div class="ticket-notch-left"></div>
+          <div class="ticket-notch-right"></div>
+          <div class="ticket-perforation"></div>
+        </div>
+
+        <!-- Bottom Half: Attendee Verification & QR Code -->
+        <div class="p-7 bg-white pt-2">
+          <div class="flex items-center gap-5">
+            <!-- Simulated QR Visual -->
+            <div class="w-24 h-24 rounded-2xl bg-slate-900 p-2 flex items-center justify-center flex-shrink-0 shadow-sm">
+              <div class="w-full h-full rounded-xl qr-matrix"></div>
+            </div>
+
+            <!-- Attendee Details -->
+            <div class="flex-1 min-w-0">
+              <span class="text-[10px] uppercase font-bold tracking-wider text-slate-400">ATTENDEE</span>
+              <h4 id="s8-pass-name" class="text-base font-black text-slate-900 truncate">ANWITHA GUNTUPALLI</h4>
+              <p id="s8-pass-tag" class="text-xs font-semibold text-rose-500 uppercase">TECH TALK</p>
+              <div id="s8-pass-ticket-id" class="mt-2 font-mono text-[11px] font-bold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-lg inline-block">
+                ID: CC-2026-FUT-0481
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-6 pt-5 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+            <span>Verified Student ID</span>
+            <span>Priority Gate Fast-Track</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Ticket Action Buttons -->
+      <div class="grid grid-cols-2 gap-3">
+        <button onclick="handleAddToCalendar()" class="py-3 px-4 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-sm transition flex items-center justify-center gap-2">
+          <i data-lucide="calendar" class="w-4 h-4"></i>
+          <span>Add to calendar</span>
+        </button>
+        <button onclick="switchScreen(6)" class="py-3 px-4 rounded-2xl bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs shadow-sm transition flex items-center justify-center gap-2">
+          <span>View event details</span>
+          <i data-lucide="arrow-right" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+    </section>
+
+
+    <!-- ==================== SCREEN 9: TECH CLUB ORGANIZER DASHBOARD ==================== -->
+    <section id="screen-9" class="hidden space-y-8">
+      
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <span class="px-2.5 py-1 text-[10px] font-bold rounded-md bg-rose-100 text-rose-700 uppercase">
+            ORGANIZER PORTAL
+          </span>
+          <h1 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mt-1 mb-1">
+            Good afternoon, <span class="text-rose-500">Tech Club</span>
+          </h1>
+          <p class="text-xs sm:text-sm text-slate-500">Your dashboard for registrations, check-ins and performance metrics.</p>
+        </div>
+        <button onclick="showToast('Create Event dialog opened', 'info')"
+          class="px-5 py-3 rounded-2xl bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs shadow-md transition flex items-center gap-2 whitespace-nowrap self-start sm:self-auto">
+          <i data-lucide="plus" class="w-4 h-4"></i>
+          <span>Create event</span>
+        </button>
+      </div>
+
+      <!-- 4 KPI Stat Cards -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+          <span class="text-3xl font-black text-slate-900">08</span>
+          <p class="text-xs font-medium text-slate-500 mt-1">Published events</p>
+        </div>
+        <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+          <span class="text-3xl font-black text-slate-900">486</span>
+          <p class="text-xs font-medium text-slate-500 mt-1">Total registrations</p>
+        </div>
+        <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+          <span class="text-3xl font-black text-emerald-600">76%</span>
+          <p class="text-xs font-medium text-slate-500 mt-1">Attendee turn-out</p>
+        </div>
+        <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
+          <span class="text-3xl font-black text-slate-900">42</span>
+          <p class="text-xs font-medium text-slate-500 mt-1">Pending requests</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Events Table (calls GET /api/events/{id}/registrations) -->
+        <div class="lg:col-span-8 bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-base font-bold text-slate-900">Your events</h3>
+            <span class="text-xs text-slate-400">Active roster</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left">
+              <thead>
+                <tr class="text-[11px] font-bold text-slate-400 uppercase border-b border-slate-100">
+                  <th class="py-3 px-4">Event</th>
+                  <th class="py-3 px-4">Date</th>
+                  <th class="py-3 px-4">Regs</th>
+                  <th class="py-3 px-4">Status</th>
+                  <th class="py-3 px-4 text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody id="s9-events-table-body">
+                <!-- Populated by JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Quick Actions Sidebar -->
+        <div class="lg:col-span-4 space-y-3">
+          <h3 class="text-base font-bold text-slate-900 px-1">Quick actions</h3>
+          
+          <div class="hover-card p-4 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center gap-3 cursor-pointer" onclick="showToast('Exporting attendee CSV...', 'success')">
+            <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+              <i data-lucide="download" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h5 class="text-xs font-bold text-slate-900">Export participant CSV</h5>
+              <p class="text-[11px] text-slate-400">Download registration spreadsheet</p>
+            </div>
+          </div>
+
+          <div class="hover-card p-4 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center gap-3 cursor-pointer" onclick="showToast('Launching Camera QR scanner...', 'info')">
+            <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+              <i data-lucide="qr-code" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h5 class="text-xs font-bold text-slate-900">Check-in attendees (QR)</h5>
+              <p class="text-[11px] text-slate-400">Scan passes at entrance door</p>
+            </div>
+          </div>
+
+          <div class="hover-card p-4 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center gap-3 cursor-pointer" onclick="showToast('Broadcasting announcement message...', 'info')">
+            <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
+              <i data-lucide="send" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h5 class="text-xs font-bold text-slate-900">Broadcast update</h5>
+              <p class="text-[11px] text-slate-400">Send push & email notifications</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ==================== SCREEN 10: MADE FOR YOUR INTERESTS ==================== -->
+    <section id="screen-10" class="hidden space-y-8">
+      
+      <div>
+        <h1 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mb-2">
+          Made for <span class="text-rose-500">your interests</span>
+        </h1>
+        <p class="text-sm text-slate-500">Tailored recommendations based on what you love to learn and build.</p>
+      </div>
+
+      <!-- Interest Selector Tags -->
+      <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-3">
+        <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Select topics you follow</span>
+        <div id="s10-interest-chips" class="flex flex-wrap items-center gap-2">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Recommended Event Cards -->
+      <div>
+        <h3 class="text-base font-bold text-slate-900 mb-4">Recommended for you</h3>
+        <div id="s10-cards-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- ==================== SCREEN 11: STUDENT USER PROFILE ==================== -->
+    <section id="screen-11" class="hidden space-y-8">
+      
+      <div>
+        <h1 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mb-2">
+          Your profile, <span class="text-rose-500">your way</span>
+        </h1>
+        <p class="text-sm text-slate-500">Manage your verified credentials, saved events, and campus interests.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+        
+        <!-- Profile Card -->
+        <div class="md:col-span-4 bg-white p-6 rounded-3xl border border-slate-100 shadow-sm text-center">
+          <div class="w-20 h-20 rounded-full bg-rose-100 text-rose-600 border-2 border-rose-300 flex items-center justify-center font-black text-2xl mx-auto mb-4">
+            A
+          </div>
+          <h3 class="text-lg font-black text-slate-900">Anwitha Guntupalli</h3>
+          <p class="text-xs text-slate-500 font-medium">Grade: 3rd Year CS • STU-2024-CS-094</p>
+          <span class="inline-block mt-3 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-600 border border-emerald-100">
+            STUDENT ACCOUNT
+          </span>
+
+          <div class="mt-6 pt-6 border-t border-slate-100 space-y-2 text-left">
+            <button class="w-full p-2.5 rounded-xl hover:bg-slate-50 text-xs font-semibold text-slate-700 flex items-center justify-between">
+              <span>Edit profile details</span>
+              <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+            </button>
+            <button onclick="switchScreen(10)" class="w-full p-2.5 rounded-xl hover:bg-slate-50 text-xs font-semibold text-slate-700 flex items-center justify-between">
+              <span>Event preferences</span>
+              <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+            </button>
+            <button onclick="switchScreen(4)" class="w-full p-2.5 rounded-xl hover:bg-slate-50 text-xs font-semibold text-slate-700 flex items-center justify-between">
+              <span>Notification settings</span>
+              <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Saved Events List -->
+        <div class="md:col-span-8 bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-base font-bold text-slate-900">Saved events</h3>
+            <span class="text-xs text-slate-400">Bookmarks</span>
+          </div>
+
+          <div id="s11-saved-list" class="space-y-3">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ==================== SCREEN 12: CO-BUILDER SQUAD MATCHER ==================== -->
+    <section id="screen-12" class="hidden space-y-8">
+      
+      <div>
+        <h1 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mb-2">
+          Find your people. <span class="text-rose-500">Build something great.</span>
+        </h1>
+        <p class="text-sm text-slate-500">Connect with builders, designers and engineers for upcoming campus hackathons.</p>
+      </div>
+
+      <!-- Hero Banner -->
+      <div class="bg-hero-dark rounded-3xl p-8 text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-md">
+        <div>
+          <span class="px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wider uppercase bg-rose-500/30 text-rose-300 border border-rose-500/40">
+            HACKATHON TEAM FORMATION
+          </span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold mt-2 mb-1">Meet your future co-builders.</h2>
+          <p class="text-xs sm:text-sm text-slate-300">Match by complementary tech stacks, availability, and project ambitions.</p>
+        </div>
+        <button onclick="showToast('Squad profile published! You are now discoverable.', 'success')"
+          class="px-6 py-3 rounded-2xl bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs shadow-md whitespace-nowrap transition">
+          Create my squad →
+        </button>
+      </div>
+
+      <!-- Matches Grid -->
+      <div>
+        <h3 class="text-base font-bold text-slate-900 mb-4">Your best matches</h3>
+        <div id="s12-matches-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- ======================== ATTENDEE MODAL (SCREEN 9 ORGANIZER) ======================== -->
+  <div id="attendee-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl border border-slate-100 max-h-[85vh] flex flex-col">
+      <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+        <div>
+          <h4 id="attendee-modal-title" class="text-base font-bold text-slate-900">Event Attendees</h4>
+          <span id="attendee-modal-count" class="text-xs text-slate-400">Retrieved from /api/events/{id}/registrations</span>
+        </div>
+        <button onclick="closeAttendeeModal()" class="p-2 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-700">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div id="attendee-modal-list" class="space-y-2 py-4 overflow-y-auto flex-1">
+        <!-- Rows injected dynamically -->
+      </div>
+
+      <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
+        <button onclick="closeAttendeeModal()" class="px-4 py-2 text-xs font-semibold rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200">
+          Close
+        </button>
+        <button onclick="showToast('Exporting attendee records...', 'success')" class="px-4 py-2 text-xs font-semibold rounded-xl bg-rose-500 text-white hover:bg-rose-600">
+          Download CSV
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ======================== FLOATING FIGMA SCREEN SWITCHER DOCK ======================== -->
+  <div class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-full max-w-5xl px-4 pointer-events-none">
+    <div class="screen-switcher-dock rounded-full px-4 py-3 flex items-center gap-2 pointer-events-auto shadow-2xl border border-white/20">
+      
+      <div class="flex items-center gap-1.5 pl-1 pr-2 text-white font-bold text-xs whitespace-nowrap border-r border-white/20 mr-1">
+        <div class="w-2 h-2 rounded-full bg-rose-500 animate-ping"></div>
+        <span class="hidden sm:inline">Figma UI:</span>
+      </div>
+
+      <!-- 12 Screen Selector Buttons (scrollable horizontally) -->
+      <div id="screen-switcher-list" class="flex items-center gap-1.5 overflow-x-auto py-0.5 no-scrollbar flex-1">
+        <!-- Buttons injected dynamically -->
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ======================== TOAST NOTIFICATION BANNER ======================== -->
+  <div id="global-toast" class="hidden">
+    <i id="global-toast-icon" data-lucide="info" class="w-4 h-4"></i>
+    <span id="global-toast-text" class="text-xs font-semibold">Notification</span>
+  </div>
+
+  <!-- App Script -->
+  <script src="app.js"></script>
+</body>
+</html>

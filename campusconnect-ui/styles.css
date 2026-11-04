@@ -1,0 +1,155 @@
+/* CampusConnect Modern Design System */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+
+:root {
+  --primary-coral: #FA4D38;
+  --primary-coral-hover: #E43E29;
+  --primary-coral-light: #FFF0EE;
+  --dark-navy: #0C1322;
+  --dark-card: #151F33;
+  --bg-canvas: #F8F9FA;
+  --text-main: #111827;
+  --text-muted: #64748B;
+  --border-light: #EBECEF;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--bg-canvas);
+  color: var(--text-main);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* Ticket Styling for Digital Event Pass */
+.ticket-container {
+  position: relative;
+  background: white;
+  border-radius: 24px;
+  box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(226, 232, 240, 0.8);
+  overflow: hidden;
+}
+
+.ticket-notch-left,
+.ticket-notch-right {
+  position: absolute;
+  top: 50%;
+  width: 28px;
+  height: 28px;
+  background-color: var(--bg-canvas);
+  border-radius: 50%;
+  z-index: 10;
+  transform: translateY(-50%);
+}
+
+.ticket-notch-left {
+  left: -14px;
+  box-shadow: inset -2px 0 3px rgba(0,0,0,0.06);
+}
+
+.ticket-notch-right {
+  right: -14px;
+  box-shadow: inset 2px 0 3px rgba(0,0,0,0.06);
+}
+
+.ticket-perforation {
+  border-top: 2px dashed #E2E8F0;
+  position: relative;
+  margin: 0 18px;
+}
+
+/* Gradient accents */
+.bg-coral-gradient {
+  background: linear-gradient(135deg, #FF5B48 0%, #FA4D38 100%);
+}
+
+.bg-hero-dark {
+  background: linear-gradient(135deg, #0F172A 0%, #172554 100%);
+}
+
+.bg-fest-gradient {
+  background: linear-gradient(135deg, #FFF1F2 0%, #FFE4E6 100%);
+}
+
+.bg-hackathon-gradient {
+  background: linear-gradient(135deg, #F5F3FF 0%, #EDE9FE 100%);
+}
+
+.bg-tech-gradient {
+  background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+}
+
+/* Screen Switcher Floating Pill */
+.screen-switcher-dock {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: rgba(15, 23, 42, 0.90);
+  box-shadow: 0 12px 35px -5px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.15);
+}
+
+/* Card hover animation */
+.hover-card {
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hover-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px -6px rgba(15, 23, 42, 0.08), 0 0 0 1px rgba(226, 232, 240, 0.9);
+}
+
+/* QR Code pattern visual */
+.qr-matrix {
+  background-image: 
+    linear-gradient(45deg, #0f172a 25%, transparent 25%), 
+    linear-gradient(-45deg, #0f172a 25%, transparent 25%), 
+    linear-gradient(45deg, transparent 75%, #0f172a 75%), 
+    linear-gradient(-45deg, transparent 75%, #0f172a 75%);
+  background-size: 8px 8px;
+  background-position: 0 0, 0 4px, 4px -4px, -4px 0px;
+}
+
+/* Toast animation */
+@keyframes slideDownToast {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.toast-animation {
+  animation: slideDownToast 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Badge glow */
+.pulse-badge {
+  box-shadow: 0 0 0 0 rgba(250, 77, 56, 0.6);
+  animation: pulseGlow 2s infinite;
+}
+@keyframes pulseGlow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(250, 77, 56, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(250, 77, 56, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(250, 77, 56, 0);
+  }
+}
