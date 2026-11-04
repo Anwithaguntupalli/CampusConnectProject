@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.venv/
+venv/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Local database
+*.db
+campusconnect-backend/campusconnect.db
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
